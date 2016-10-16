@@ -2,22 +2,28 @@
 # auto: flytrap
 import string
 
+DEFAULT_SEED = string.digits
+
 
 class Seed(object):
-    def __init__(self):
+    def __init__(self, value=None):
         super(Seed, self).__init__()
-        self.__seed_list = string.digits
+        if value:
+            self.__set__(self, value)
+        else:
+            self.__seed_list = DEFAULT_SEED
 
     def __set__(self, instance, value):
         try:
-            if len(value) == 0:
-                return
-            if not isinstance(value, (basestring, list, tuple)):
-                return
+            if isinstance(value, (list, tuple)):
+                value = ''.join(value)
             if len(set(value)) != len(value):
-                return
-            self.__seed_list = list(value)
-        except (ValueError, IndexError):
+                value = ''.join(set(value))
+            if len(value) < 2:
+                self.__seed_list = DEFAULT_SEED
+            else:
+                self.__seed_list = value
+        except Exception:
             pass
 
     def __get__(self, instance, owner):
@@ -27,25 +33,25 @@ class Seed(object):
         return len(self.__seed_list)
 
 
-class Custom(object):
+class CustomCarry(object):
     # Iterable class
     SEED_LIST = Seed()
 
     def __init__(self, start=None):
-        super(Custom, self).__init__()
-        if len(self.SEED_LIST) == 0:
-            self.SEED_LIST = string.digits
+        super(CustomCarry, self).__init__()
+        if len(self.SEED_LIST) < 2:
+            self.SEED_LIST = DEFAULT_SEED
         if not start:
             start = self.SEED_LIST[0]
-        self.seed_len = len(self.SEED_LIST)
-        self.start = str(start)
+        self.start = ''.join(start)
         self.__cur_num = self.start[:]
 
     def __iter__(self):
         return self
 
     def next(self):
-        return self.__add__(self.__class__(self.SEED_LIST[0]))
+        self.__cur_num = self.__add__(self.__class__(self.SEED_LIST[1]))
+        return self.__cur_num
 
     def __add__(self, other):
         other = self.__revise_object(other)
@@ -57,7 +63,7 @@ class Custom(object):
         for my_char, other_char in zip(my_str, other_str):
             my_char, other_char = self.__revise_char(my_char), self.__revise_char(other_char)
             seed_index = self.SEED_LIST.index(my_char) + self.SEED_LIST.index(other_char) + cf_flag
-            cf_flag, index = divmod(seed_index, self.seed_len)
+            cf_flag, index = divmod(seed_index, len(self.SEED_LIST))
             new_string.insert(0, self.SEED_LIST[index])
         if new_string[0] == self.SEED_LIST[0]:
             return ''.join(new_string[1:])
@@ -90,3 +96,14 @@ class Custom(object):
         if char not in self.SEED_LIST:
             char = self.SEED_LIST[0]
         return char
+
+
+def change_custom_seed(seed):
+    if isinstance(seed, (basestring, list, tuple)):
+        seed = Seed(seed)
+    if isinstance(seed, Seed):
+        CustomCarry.SEED_LIST = seed
+
+
+def _default_custom_seed():
+    change_custom_seed(DEFAULT_SEED)
