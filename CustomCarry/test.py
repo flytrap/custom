@@ -6,6 +6,7 @@ from custom import CustomCarry, Seed, change_custom_seed, _default_custom_seed
 
 class CustomTest(unittest.TestCase):
     def test_custom_class(self):
+        print('custom_class:1')
         custom = CustomCarry()
         c = custom.next()
         self.assertEqual(c, '1')
@@ -22,6 +23,7 @@ class CustomTest(unittest.TestCase):
         self.assertEqual(c1 + c2, 'ba')
 
     def test_seed(self):
+        print('seed:2')
         seed = Seed('abc')
         CustomCarry.SEED_LIST = seed
         c = CustomCarry()
@@ -29,11 +31,13 @@ class CustomTest(unittest.TestCase):
         _default_custom_seed()
 
     def test_change_custom_seed(self):
+        print('change_custom_seed:3')
         change_custom_seed(['abc', 'd'])
         self.assertEqual(CustomCarry.SEED_LIST, 'abcd')
         _default_custom_seed()
 
     def test_iter_password(self):
+        print('iter_password:4')
         import string
         change_custom_seed(string.printable)
         c = CustomCarry(CustomCarry.SEED_LIST[0] * 6)

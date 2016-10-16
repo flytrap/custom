@@ -6,6 +6,14 @@ DEFAULT_SEED = string.digits
 
 
 class Seed(object):
+    """
+    Use to CustomCarry:
+    seed = Seed()
+    seed = Seed('abc')
+    seed = Seed([1,2,3])
+    CustomCarry.SEED_LIST = seed()
+    """
+
     def __init__(self, value=None):
         super(Seed, self).__init__()
         if value:
@@ -14,17 +22,14 @@ class Seed(object):
             self.__seed_list = DEFAULT_SEED
 
     def __set__(self, instance, value):
-        try:
-            if isinstance(value, (list, tuple)):
-                value = ''.join(value)
-            if len(set(value)) != len(value):
-                value = ''.join(set(value))
-            if len(value) < 2:
-                self.__seed_list = DEFAULT_SEED
-            else:
-                self.__seed_list = value
-        except Exception:
-            pass
+        if isinstance(value, (list, tuple)):
+            value = ''.join(value)
+        if len(set(value)) != len(value):
+            value = ''.join(set(value))
+        if len(value) < 2:
+            self.__seed_list = DEFAULT_SEED
+        else:
+            self.__seed_list = value
 
     def __get__(self, instance, owner):
         return self.__seed_list
@@ -34,6 +39,12 @@ class Seed(object):
 
 
 class CustomCarry(object):
+    """
+    A Iter object
+    c = CustomCarry()
+    c = CustomCarry('000000') # c.next() == '000001'
+    print(c.next())
+    """
     # Iterable class
     SEED_LIST = Seed()
 
@@ -59,13 +70,16 @@ class CustomCarry(object):
         my_str = self.__create_len_string(self, max_len)[::-1]
         other_str = self.__create_len_string(other, max_len)[::-1]
         cf_flag = 0
+        # temp strong string char
         new_string = []
         for my_char, other_char in zip(my_str, other_str):
             my_char, other_char = self.__revise_char(my_char), self.__revise_char(other_char)
+            # calc new index
             seed_index = self.SEED_LIST.index(my_char) + self.SEED_LIST.index(other_char) + cf_flag
             cf_flag, index = divmod(seed_index, len(self.SEED_LIST))
             new_string.insert(0, self.SEED_LIST[index])
         if new_string[0] == self.SEED_LIST[0]:
+            # not over flower
             return ''.join(new_string[1:])
         else:
             return ''.join(new_string)
@@ -77,7 +91,7 @@ class CustomCarry(object):
         return len(self.__cur_num)
 
     def __create_len_string(self, old_str, length):
-        # Create point length string
+        # insert index 0 char
         str_len = len(old_str)
         return str((length + 1 - str_len) * self.SEED_LIST[0]) + str(old_str)
 
@@ -99,6 +113,13 @@ class CustomCarry(object):
 
 
 def change_custom_seed(seed):
+    """
+    change CustomCarry seed
+    example:
+    change_custom_seed([1,2,3])  # then CustomCarry.SEED_LIST == '123' is True
+    :param seed:
+    :return:
+    """
     if isinstance(seed, (basestring, list, tuple)):
         seed = Seed(seed)
     if isinstance(seed, Seed):
