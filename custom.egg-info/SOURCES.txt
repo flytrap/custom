@@ -1,8 +1,0 @@
-setup.py
-CustomCarry/__init__.py
-CustomCarry/custom.py
-CustomCarry/test.py
-custom.egg-info/PKG-INFO
-custom.egg-info/SOURCES.txt
-custom.egg-info/dependency_links.txt
-custom.egg-info/top_level.txt

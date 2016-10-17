@@ -1,10 +1,18 @@
 # coding: utf8
 # auto: flytrap
-# from distutils.core import setup
-from setuptools import setup, find_packages
+try:
+    from setuptools import setup, find_packages
+
+    PACKAGES = find_packages()
+except ImportError:
+    from distutils.core import setup
+
+    PACKAGES = ['custom', 'custom.CustomCarry']
+
+from custom.CustomCarry import __version__
 
 NAME = 'custom'
-VERSION = 0.1
+VERSION = __version__
 
 setup(name=NAME,
       version=VERSION,
@@ -14,5 +22,5 @@ setup(name=NAME,
       url='https://github.com/hiddes/custom',
       description='Custom self carry',
 
-      packages=find_packages()
+      packages=PACKAGES
       )
