@@ -19,7 +19,7 @@ setup(name=NAME,
 
       author='flytrap',
       author_email='hiddes@126.com',
-      url='https://github.com/hiddes/custom',
+      url='https://github.com/flytrap/custom',
       description='Custom self carry',
 
       packages=PACKAGES
